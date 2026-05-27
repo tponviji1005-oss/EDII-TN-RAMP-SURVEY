@@ -1,5 +1,6 @@
+import { fetchDistricts, type District } from "../lib/api";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useReducer, useCallback } from "react";
+import { useReducer, useEffect, useState, useCallback } from "react";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/survey")({
 });
 
 interface SurveyForm {
+  district: string;
   name: string;
   gender: string;
   aadhaar: string;
@@ -36,6 +38,7 @@ interface SurveyForm {
 type FieldAction = { field: keyof SurveyForm; value: string };
 
 const INITIAL_FORM: SurveyForm = {
+  district: "",
   name: "",
   gender: "Male",
   aadhaar: "",
@@ -55,31 +58,31 @@ function SurveyPage() {
   const navigate = useNavigate();
   const [step, setStep] = useReducer((_: number, next: number) => next, 1);
   const [form, dispatch] = useReducer(reducer, INITIAL_FORM);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [loadingDistricts, setLoadingDistricts] = useState(true);
 
   useEffect(() => {
     if (!currentUser()) navigate({ to: "/login" });
   }, [navigate]);
+
+  useEffect(() => {
+    fetchDistricts()
+      .then((data) => setDistricts(data))
+      .catch(() => {})
+      .finally(() => setLoadingDistricts(false));
+  }, []);
 
   const set = useCallback((field: keyof SurveyForm, value: string) => {
     dispatch({ field, value });
   }, []);
 
   function validateStep1() {
-    if (!form.name.trim() || form.name.length > 30) {
-      return "Name is required (max 30 chars)";
-    }
-    if (!/^\d{12}$/.test(form.aadhaar)) {
-      return "Aadhaar must be exactly 12 digits";
-    }
-    if (!form.social) {
-      return "Please select your social status";
-    }
-    if (!/^\d{10}$/.test(form.mobile)) {
-      return "Mobile must be exactly 10 digits";
-    }
-    if (!form.category) {
-      return "Please select a category";
-    }
+    if (!form.district) return "Please select a district";
+    if (!form.name.trim() || form.name.length > 30) return "Name is required (max 30 chars)";
+    if (!/^\d{12}$/.test(form.aadhaar)) return "Aadhaar must be exactly 12 digits";
+    if (!form.social) return "Please select your social status";
+    if (!/^\d{10}$/.test(form.mobile)) return "Mobile must be exactly 10 digits";
+    if (!form.category) return "Please select a category";
     return null;
   }
 
@@ -92,23 +95,15 @@ function SurveyPage() {
 
   function onNext() {
     const err = validateStep1();
-    if (err) {
-      toast.error(err);
-      return;
-    }
+    if (err) { toast.error(err); return; }
     setStep(2);
   }
 
-  function onBack() {
-    setStep(1);
-  }
+  function onBack() { setStep(1); }
 
   function onSubmit() {
     const err = validateStep2();
-    if (err) {
-      toast.error(err);
-      return;
-    }
+    if (err) { toast.error(err); return; }
     saveSurvey(form);
     navigate({ to: "/success" });
   }
@@ -137,7 +132,13 @@ function SurveyPage() {
           style={{ boxShadow: "var(--shadow-card)" }}
         >
           {step === 1 ? (
-            <PersonalDetails form={form} set={set} onNext={onNext} />
+            <PersonalDetails
+              form={form}
+              set={set}
+              onNext={onNext}
+              districts={districts}
+              loadingDistricts={loadingDistricts}
+            />
           ) : (
             <Questions form={form} set={set} onBack={onBack} onSubmit={onSubmit} />
           )}
@@ -147,15 +148,7 @@ function SurveyPage() {
   );
 }
 
-function Field({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
+function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
@@ -171,14 +164,37 @@ function PersonalDetails({
   form,
   set,
   onNext,
+  districts,
+  loadingDistricts,
 }: {
   form: SurveyForm;
   set: (k: keyof SurveyForm, v: string) => void;
   onNext: () => void;
+  districts: District[];
+  loadingDistricts: boolean;
 }) {
   return (
     <>
-      <Field label="1. Name (Max 30 characters)" hint={`${form.name.length}/30`}>
+      <Field label="1. District">
+        <Select value={form.district} onValueChange={(v) => set("district", v)}>
+          <SelectTrigger className="h-12 rounded-xl">
+            <SelectValue placeholder="Select District" />
+          </SelectTrigger>
+          <SelectContent>
+            {loadingDistricts ? (
+              <SelectItem value="loading" disabled>Loading...</SelectItem>
+            ) : (
+              districts.map((d) => (
+                <SelectItem key={d.masterDataId} value={d.masterDataName}>
+                  {d.masterDataName}
+                </SelectItem>
+              ))
+            )}
+          </SelectContent>
+        </Select>
+      </Field>
+
+      <Field label="2. Name (Max 30 characters)" hint={`${form.name.length}/30`}>
         <Input
           value={form.name}
           maxLength={30}
@@ -188,7 +204,7 @@ function PersonalDetails({
         />
       </Field>
 
-      <Field label="2. Gender">
+      <Field label="3. Gender">
         <RadioGroup
           value={form.gender}
           onValueChange={(v) => set("gender", v)}
@@ -202,7 +218,7 @@ function PersonalDetails({
         </RadioGroup>
       </Field>
 
-      <Field label="3. Aadhaar Number (12 digits)" hint={`${form.aadhaar.length}/12`}>
+      <Field label="4. Aadhaar Number (12 digits)" hint={`${form.aadhaar.length}/12`}>
         <Input
           inputMode="numeric"
           value={form.aadhaar}
@@ -213,22 +229,20 @@ function PersonalDetails({
         />
       </Field>
 
-      <Field label="4. Social Status">
+      <Field label="5. Social Status">
         <Select value={form.social} onValueChange={(v) => set("social", v)}>
           <SelectTrigger className="h-12 rounded-xl">
             <SelectValue placeholder="Select Social Status" />
           </SelectTrigger>
           <SelectContent>
             {["General", "OBC", "SC", "ST", "EWS"].map((o) => (
-              <SelectItem key={o} value={o}>
-                {o}
-              </SelectItem>
+              <SelectItem key={o} value={o}>{o}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </Field>
 
-      <Field label="5. Mobile Number (10 digits)" hint={`${form.mobile.length}/10`}>
+      <Field label="6. Mobile Number (10 digits)" hint={`${form.mobile.length}/10`}>
         <Input
           inputMode="numeric"
           value={form.mobile}
@@ -239,16 +253,14 @@ function PersonalDetails({
         />
       </Field>
 
-      <Field label="6. Category Responder">
+      <Field label="7. Category Responder">
         <Select value={form.category} onValueChange={(v) => set("category", v)}>
           <SelectTrigger className="h-12 rounded-xl">
             <SelectValue placeholder="Select Category Responder" />
           </SelectTrigger>
           <SelectContent>
             {["Entrepreneur", "Student", "Trainer", "Mentor", "Other"].map((o) => (
-              <SelectItem key={o} value={o}>
-                {o}
-              </SelectItem>
+              <SelectItem key={o} value={o}>{o}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -283,37 +295,33 @@ function Questions({
 }) {
   return (
     <>
-      <Field label="7. Question 1">
+      <Field label="8. Question 1">
         <Select value={form.q1} onValueChange={(v) => set("q1", v)}>
           <SelectTrigger className="h-12 rounded-xl">
             <SelectValue placeholder="Select your answer" />
           </SelectTrigger>
           <SelectContent>
             {["Option A", "Option B", "Option C", "Option D"].map((o) => (
-              <SelectItem key={o} value={o}>
-                {o}
-              </SelectItem>
+              <SelectItem key={o} value={o}>{o}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </Field>
 
-      <Field label="8. Question 2">
+      <Field label="9. Question 2">
         <Select value={form.q2} onValueChange={(v) => set("q2", v)}>
           <SelectTrigger className="h-12 rounded-xl">
             <SelectValue placeholder="Select your answer" />
           </SelectTrigger>
           <SelectContent>
             {["Option A", "Option B", "Option C", "Option D"].map((o) => (
-              <SelectItem key={o} value={o}>
-                {o}
-              </SelectItem>
+              <SelectItem key={o} value={o}>{o}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </Field>
 
-      <Field label="9. Feedback / Suggestions" hint={`${form.feedback.length}/500`}>
+      <Field label="10. Feedback / Suggestions" hint={`${form.feedback.length}/500`}>
         <Textarea
           value={form.feedback}
           maxLength={500}
@@ -324,11 +332,7 @@ function Questions({
       </Field>
 
       <div className="flex gap-3 pt-2">
-        <Button
-          variant="outline"
-          className="flex-1 h-12 rounded-xl"
-          onClick={onBack}
-        >
+        <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={onBack}>
           Previous
         </Button>
         <Button

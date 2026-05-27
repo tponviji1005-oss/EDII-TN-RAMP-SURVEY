@@ -12,8 +12,7 @@ function SplashPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const target = currentUser() ? "/dashboard" : "/login";
-      nav({ to: target });
+      nav({ to: "/login" });
     }, 1800);
 
     return () => clearTimeout(timer);

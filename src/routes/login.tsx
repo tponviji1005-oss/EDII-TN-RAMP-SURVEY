@@ -18,24 +18,21 @@ function LoginPage() {
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  const handleLogin = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      setBusy(true);
-
-      setTimeout(() => {
-        const ok = tryLogin(form.username.trim(), form.password);
-        if (ok) {
-          toast.success("Welcome back!");
-          navigate({ to: "/dashboard" });
-        } else {
-          toast.error("Invalid username or password");
-          setBusy(false);
-        }
-      }, 400);
-    },
-    [form, navigate],
-  );
+ const handleLogin = useCallback(
+  (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    const ok = tryLogin(form.username, form.password);
+    if (ok) {
+      toast.success("Welcome back!");
+      navigate({ to: "/dashboard" });
+    } else {
+      toast.error("Invalid username or password");
+    }
+    setBusy(false);
+  },
+  [form, navigate]
+);
 
   return (
     <main

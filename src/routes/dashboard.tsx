@@ -23,9 +23,7 @@ function DashboardPage() {
     }
     setUser(u);
     setRecords(fetchAllSurveys());
-  }, [navigate]);
-
-  if (!user) return null;
+  }, []);
 
   const recent = records.slice(0, 5);
 
@@ -43,7 +41,7 @@ function DashboardPage() {
           />
           <div className="flex-1">
             <p className="text-xs text-white/75">Welcome to EDII RAMP Survey</p>
-            <h1 className="text-lg font-semibold">Hello, {user.name}</h1>
+            <h1 className="text-lg font-semibold">Hello, {user?.name}</h1>
           </div>
         </div>
       </header>
