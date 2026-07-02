@@ -1,6 +1,6 @@
-import { fetchDistricts, type District } from "../lib/api";
+import { districts, type District } from "../lib/api";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useReducer, useEffect, useState, useCallback } from "react";
+import { useReducer, useEffect, useCallback } from "react";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,19 +58,9 @@ function SurveyPage() {
   const navigate = useNavigate();
   const [step, setStep] = useReducer((_: number, next: number) => next, 1);
   const [form, dispatch] = useReducer(reducer, INITIAL_FORM);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [loadingDistricts, setLoadingDistricts] = useState(true);
-
   useEffect(() => {
     if (!currentUser()) navigate({ to: "/login" });
   }, [navigate]);
-
-  useEffect(() => {
-    fetchDistricts()
-      .then((data) => setDistricts(data))
-      .catch(() => {})
-      .finally(() => setLoadingDistricts(false));
-  }, []);
 
   const set = useCallback((field: keyof SurveyForm, value: string) => {
     dispatch({ field, value });
@@ -136,8 +126,6 @@ function SurveyPage() {
               form={form}
               set={set}
               onNext={onNext}
-              districts={districts}
-              loadingDistricts={loadingDistricts}
             />
           ) : (
             <Questions form={form} set={set} onBack={onBack} onSubmit={onSubmit} />
@@ -164,14 +152,10 @@ function PersonalDetails({
   form,
   set,
   onNext,
-  districts,
-  loadingDistricts,
 }: {
   form: SurveyForm;
   set: (k: keyof SurveyForm, v: string) => void;
   onNext: () => void;
-  districts: District[];
-  loadingDistricts: boolean;
 }) {
   return (
     <>
@@ -181,15 +165,11 @@ function PersonalDetails({
             <SelectValue placeholder="Select District" />
           </SelectTrigger>
           <SelectContent>
-            {loadingDistricts ? (
-              <SelectItem value="loading" disabled>Loading...</SelectItem>
-            ) : (
-              districts.map((d) => (
-                <SelectItem key={d.masterDataId} value={d.masterDataName}>
-                  {d.masterDataName}
-                </SelectItem>
-              ))
-            )}
+            {districts.map((d) => (
+              <SelectItem key={d.masterDataId} value={d.masterDataName}>
+                {d.masterDataName}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </Field>

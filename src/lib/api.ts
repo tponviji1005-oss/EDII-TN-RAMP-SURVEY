@@ -1,42 +1,45 @@
-const BASE_URL = "https://editn.in/API/RampSurvey";
-
-export interface LoginResponse {
-  status: boolean;
-  message: string;
-  data?: { name: string; username: string };
-}
-
-export const loginUser = async (
-  username: string,
-  password: string
-): Promise<LoginResponse> => {
-  const response = await fetch(
-    `${BASE_URL}/GetUserLogin?UserName=${encodeURIComponent(username)}&UserPassword=${encodeURIComponent(password)}`,
-    { mode: "cors" }
-  );
-  return response.json();
-};
-
-export const testConnection = async (): Promise<unknown> => {
-  const response = await fetch(`${BASE_URL}/Test`);
-  if (!response.ok) throw new Error("Test request failed");
-  return response.json();
-};
-
 export interface District {
   masterDataId: string;
   masterDataName: string;
 }
 
-export interface DistrictResponse {
-  status: boolean;
-  message: string;
-  data: District[];
-}
-
-export const fetchDistricts = async (): Promise<District[]> => {
-  const response = await fetch(`${BASE_URL}/GetDistrictMaster`);
-  if (!response.ok) throw new Error("Failed to fetch districts");
-  const result: DistrictResponse = await response.json();
-  return result.data;
-};
+export const districts: District[] = [
+  { masterDataId: "1", masterDataName: "Ariyalur" },
+  { masterDataId: "2", masterDataName: "Chengalpattu" },
+  { masterDataId: "3", masterDataName: "Chennai" },
+  { masterDataId: "4", masterDataName: "Coimbatore" },
+  { masterDataId: "5", masterDataName: "Cuddalore" },
+  { masterDataId: "6", masterDataName: "Dharmapuri" },
+  { masterDataId: "7", masterDataName: "Dindigul" },
+  { masterDataId: "8", masterDataName: "Erode" },
+  { masterDataId: "9", masterDataName: "Kallakurichi" },
+  { masterDataId: "10", masterDataName: "Kanchipuram" },
+  { masterDataId: "11", masterDataName: "Kanyakumari" },
+  { masterDataId: "12", masterDataName: "Karur" },
+  { masterDataId: "13", masterDataName: "Krishnagiri" },
+  { masterDataId: "14", masterDataName: "Madurai" },
+  { masterDataId: "15", masterDataName: "Mayiladuthurai" },
+  { masterDataId: "16", masterDataName: "Nagapattinam" },
+  { masterDataId: "17", masterDataName: "Namakkal" },
+  { masterDataId: "18", masterDataName: "Nilgiris" },
+  { masterDataId: "19", masterDataName: "Perambalur" },
+  { masterDataId: "20", masterDataName: "Pudukkottai" },
+  { masterDataId: "21", masterDataName: "Ramanathapuram" },
+  { masterDataId: "22", masterDataName: "Ranipet" },
+  { masterDataId: "23", masterDataName: "Salem" },
+  { masterDataId: "24", masterDataName: "Sivaganga" },
+  { masterDataId: "25", masterDataName: "Tenkasi" },
+  { masterDataId: "26", masterDataName: "Thanjavur" },
+  { masterDataId: "27", masterDataName: "Theni" },
+  { masterDataId: "28", masterDataName: "Thoothukudi" },
+  { masterDataId: "29", masterDataName: "Tiruchirappalli" },
+  { masterDataId: "30", masterDataName: "Tirunelveli" },
+  { masterDataId: "31", masterDataName: "Tirupathur" },
+  { masterDataId: "32", masterDataName: "Tiruppur" },
+  { masterDataId: "33", masterDataName: "Tiruvallur" },
+  { masterDataId: "34", masterDataName: "Tiruvannamalai" },
+  { masterDataId: "35", masterDataName: "Tiruvarur" },
+  { masterDataId: "36", masterDataName: "Vellore" },
+  { masterDataId: "37", masterDataName: "Viluppuram" },
+  { masterDataId: "38", masterDataName: "Virudhunagar" },
+];
