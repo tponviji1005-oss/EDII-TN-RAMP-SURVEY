@@ -3,11 +3,6 @@ node_modules/
 
 # Build output
 dist/
-dist-ssr/
-.output/
-.vinxi/
-.tanstack/**
-.nitro/
 
 # Logs
 *.log
