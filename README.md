@@ -143,5 +143,3 @@ npm run preview
 * Search and filter survey records
 
 ---
-
-If you found this project helpful, consider giving it a ⭐ on GitH
