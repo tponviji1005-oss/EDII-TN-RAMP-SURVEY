@@ -16,9 +16,7 @@ function SuccessPage() {
         <Check className="h-16 w-16" strokeWidth={3} />
       </div>
 
-      <h1 className="mt-8 text-2xl font-bold text-foreground">
-        Survey Submitted Successfully!
-      </h1>
+      <h1 className="mt-8 text-2xl font-bold text-foreground">Survey Submitted Successfully!</h1>
       <p className="mt-2 text-sm text-muted-foreground max-w-xs">
         Thank you for your response. Your data has been recorded.
       </p>

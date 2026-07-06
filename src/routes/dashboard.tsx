@@ -23,7 +23,7 @@ function DashboardPage() {
     }
     setUser(u);
     setRecords(fetchAllSurveys());
-  }, []);
+  }, [navigate]);
 
   const recent = records.slice(0, 5);
 
@@ -54,10 +54,7 @@ function DashboardPage() {
           <p className="text-sm text-muted-foreground">Total Surveys</p>
           <div className="mt-2 flex items-end justify-between">
             <span className="text-4xl font-bold text-foreground">{records.length}</span>
-            <div
-              className="rounded-xl p-3 text-white"
-              style={{ background: "var(--grad-accent)" }}
-            >
+            <div className="rounded-xl p-3 text-white" style={{ background: "var(--grad-accent)" }}>
               <ClipboardList className="h-6 w-6" />
             </div>
           </div>
@@ -92,10 +89,7 @@ function DashboardPage() {
             )}
 
             {recent.map((r) => (
-              <div
-                key={r.id}
-                className="rounded-2xl bg-card p-4 flex items-center gap-3 shadow-sm"
-              >
+              <div key={r.id} className="rounded-2xl bg-card p-4 flex items-center gap-3 shadow-sm">
                 <div className="rounded-xl bg-secondary p-2.5 text-primary">
                   <ClipboardList className="h-5 w-5" />
                 </div>

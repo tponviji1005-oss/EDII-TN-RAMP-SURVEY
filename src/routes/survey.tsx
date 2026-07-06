@@ -85,25 +85,30 @@ function SurveyPage() {
 
   function onNext() {
     const err = validateStep1();
-    if (err) { toast.error(err); return; }
+    if (err) {
+      toast.error(err);
+      return;
+    }
     setStep(2);
   }
 
-  function onBack() { setStep(1); }
+  function onBack() {
+    setStep(1);
+  }
 
   function onSubmit() {
     const err = validateStep2();
-    if (err) { toast.error(err); return; }
+    if (err) {
+      toast.error(err);
+      return;
+    }
     saveSurvey(form);
     navigate({ to: "/success" });
   }
 
   return (
     <main className="min-h-screen bg-background pb-10">
-      <header
-        className="px-5 pt-12 pb-6 text-white"
-        style={{ background: "var(--grad-primary)" }}
-      >
+      <header className="px-5 pt-12 pb-6 text-white" style={{ background: "var(--grad-primary)" }}>
         <div className="flex items-center gap-3">
           <Link to="/dashboard" className="rounded-full bg-white/15 p-2">
             <ChevronLeft className="h-5 w-5" />
@@ -122,11 +127,7 @@ function SurveyPage() {
           style={{ boxShadow: "var(--shadow-card)" }}
         >
           {step === 1 ? (
-            <PersonalDetails
-              form={form}
-              set={set}
-              onNext={onNext}
-            />
+            <PersonalDetails form={form} set={set} onNext={onNext} />
           ) : (
             <Questions form={form} set={set} onBack={onBack} onSubmit={onSubmit} />
           )}
@@ -136,7 +137,15 @@ function SurveyPage() {
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
@@ -216,7 +225,9 @@ function PersonalDetails({
           </SelectTrigger>
           <SelectContent>
             {["General", "OBC", "SC", "ST", "EWS"].map((o) => (
-              <SelectItem key={o} value={o}>{o}</SelectItem>
+              <SelectItem key={o} value={o}>
+                {o}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -240,7 +251,9 @@ function PersonalDetails({
           </SelectTrigger>
           <SelectContent>
             {["Entrepreneur", "Student", "Trainer", "Mentor", "Other"].map((o) => (
-              <SelectItem key={o} value={o}>{o}</SelectItem>
+              <SelectItem key={o} value={o}>
+                {o}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -282,7 +295,9 @@ function Questions({
           </SelectTrigger>
           <SelectContent>
             {["Option A", "Option B", "Option C", "Option D"].map((o) => (
-              <SelectItem key={o} value={o}>{o}</SelectItem>
+              <SelectItem key={o} value={o}>
+                {o}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -295,7 +310,9 @@ function Questions({
           </SelectTrigger>
           <SelectContent>
             {["Option A", "Option B", "Option C", "Option D"].map((o) => (
-              <SelectItem key={o} value={o}>{o}</SelectItem>
+              <SelectItem key={o} value={o}>
+                {o}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>

@@ -23,10 +23,7 @@ function SurveysPage() {
 
   return (
     <main className="min-h-screen bg-background pb-24">
-      <header
-        className="px-5 pt-12 pb-6 text-white"
-        style={{ background: "var(--grad-primary)" }}
-      >
+      <header className="px-5 pt-12 pb-6 text-white" style={{ background: "var(--grad-primary)" }}>
         <div className="flex items-center gap-3">
           <Link to="/dashboard" className="rounded-full bg-white/15 p-2">
             <ChevronLeft className="h-5 w-5" />
@@ -54,18 +51,14 @@ function SurveysPage() {
         )}
 
         {surveys.map((s) => (
-          <div
-            key={s.id}
-            className="rounded-2xl bg-card p-4 flex items-center gap-3 shadow-sm"
-          >
+          <div key={s.id} className="rounded-2xl bg-card p-4 flex items-center gap-3 shadow-sm">
             <div className="rounded-xl bg-secondary p-2.5 text-primary">
               <ClipboardList className="h-5 w-5" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{s.name}</p>
               <p className="text-xs text-muted-foreground">
-                {s.category} &middot;{" "}
-                {new Date(s.createdAt).toLocaleDateString()}
+                {s.category} &middot; {new Date(s.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>
